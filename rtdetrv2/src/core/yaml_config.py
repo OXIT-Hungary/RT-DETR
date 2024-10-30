@@ -6,6 +6,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
+import os
+from datetime import datetime
 import re 
 import copy
 
@@ -20,7 +22,8 @@ class YAMLConfig(BaseConfig):
         cfg = load_config(cfg_path)
         cfg = merge_dict(cfg, kwargs)
 
-        self.yaml_cfg = copy.deepcopy(cfg) 
+        self.yaml_cfg = copy.deepcopy(cfg)
+        self.log_dir = os.path.join(cfg['output_dir'], datetime.now().strftime("%Y%m%d"), cfg["exp_name"])
         
         for k in super().__dict__:
             if not k.startswith('_') and k in cfg:

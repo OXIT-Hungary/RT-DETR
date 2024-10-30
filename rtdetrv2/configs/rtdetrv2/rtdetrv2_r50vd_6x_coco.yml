@@ -1,5 +1,5 @@
 __include__: [
-  '../dataset/coco_detection.yml',
+  '../dataset/wp_coco_detection.yml',
   '../runtime.yml',
   './include/dataloader.yml',
   './include/optimizer.yml',
@@ -7,8 +7,8 @@ __include__: [
 ]
 
 
-output_dir: ./output/rtdetrv2_r50vd_6x_coco
-
+output_dir: ./outputs
+epoches: 120
 
 
 optimizer:

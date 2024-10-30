@@ -18,9 +18,9 @@ __all__ = ['DetNMSPostProcessor', ]
 @register()
 class DetNMSPostProcessor(torch.nn.Module):
     def __init__(self, \
-                iou_threshold=0.7, 
-                score_threshold=0.01, 
-                keep_topk=300, 
+                iou_threshold=0.5,
+                score_threshold=0.5,
+                keep_topk=300,
                 box_fmt='cxcywh',
                 logit_fmt='sigmoid') -> None:
         super().__init__()
@@ -46,12 +46,15 @@ class DetNMSPostProcessor(torch.nn.Module):
 
         # TODO for onnx export
         if self.deploy_mode:
-            blobs = {
-                'pred_labels': pred_labels, 
-                'pred_boxes': pred_boxes,
-                'pred_scores': pred_scores
-            }
-            return blobs
+            score_keep = pred_scores[0] > self.score_threshold
+            pred_box = pred_boxes[0][score_keep]
+            pred_label = pred_labels[0][score_keep]
+            pred_score = pred_scores[0][score_keep]
+
+            keep = torchvision.ops.batched_nms(pred_box, pred_score, pred_label, self.iou_threshold)            
+            keep = keep[:self.keep_topk]
+
+            return pred_label[keep], pred_box[keep], pred_score[keep]
 
         results = []
         for i in range(logits.shape[0]):

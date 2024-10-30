@@ -1,0 +1,59 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Train",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/rtdetrv2_pytorch/tools/train.py",
+            "args": [
+                "-c", "${workspaceFolder}/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r50vd_6x_coco.yml",
+                "-n", "rtdetrv2_r50vd_ptz_queries-30_epochs-120",
+                "-t", "${workspaceFolder}/rtdetrv2_pytorch/checkpoints/rtdetrv2_r50vd_6x_coco_ema.pth",
+                "--use-amp",
+                "--seed=42",
+                "--output-dir", "${workspaceFolder}/outputs/"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            }
+        },
+        {
+            "name": "Inference: Video",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/rtdetrv2_pytorch/references/deploy/rtdetrv2_video.py",
+            "args": [
+                "-c", "${workspaceFolder}/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r50vd_6x_coco.yml",
+                "-n", "rtdetrv2_r50vd_ptz_120-epochs",
+                "-r", "${workspaceFolder}/outputs/20241029/rtdetrv2_r50vd_ptz_queries-30_epochs-120/best.pth",
+                "--im-file=/mnt/FastSSD/dataset_wp/20241017/20241017-1830_06/20241017-1830_06.mp4",
+                "--device=cuda:0",
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            }
+        },
+        {
+            "name": "Inference: Image",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/rtdetrv2_pytorch/references/deploy/rtdetrv2_torch.py",
+            "args": [
+                "-c", "${workspaceFolder}/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_coco.yml",
+                "-r", "${workspaceFolder}/rtdetrv2_pytorch/checkpoints/rtdetrv2_r18vd_120e_coco_rerun_48.1.pth",
+                "--im-file=/home/geri/Downloads/image.jpeg",
+                "--device=cuda:0",
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            }
+        },
+    ]
+}

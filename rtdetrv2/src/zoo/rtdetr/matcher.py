@@ -41,7 +41,7 @@ class HungarianMatcher(nn.Module):
         self.cost_bbox = weight_dict['cost_bbox']
         self.cost_giou = weight_dict['cost_giou']
 
-        self.use_focal_loss = use_focal_loss
+        self.use_focal_loss = False
         self.alpha = alpha
         self.gamma = gamma
 
@@ -86,7 +86,7 @@ class HungarianMatcher(nn.Module):
         # but approximate it in 1 - proba[target class].
         # The 1 is a constant that doesn't change the matching, it can be ommitted.
         if self.use_focal_loss:
-            out_prob = out_prob[:, tgt_ids]
+            tgt_ids = out_prob[:, tgt_ids]
             neg_cost_class = (1 - self.alpha) * (out_prob ** self.gamma) * (-(1 - out_prob + 1e-8).log())
             pos_cost_class = self.alpha * ((1 - out_prob) ** self.gamma) * (-(out_prob + 1e-8).log())
             cost_class = pos_cost_class - neg_cost_class        
