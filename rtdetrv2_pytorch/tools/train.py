@@ -6,6 +6,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 import argparse
+import wandb
+import yaml
 
 from src.misc import dist_utils
 from src.core import YAMLConfig, yaml_utils
@@ -27,6 +29,9 @@ def main(args, ) -> None:
     cfg = YAMLConfig(args.config, **update_dict)
     print('cfg: ', cfg.__dict__)
 
+    # with open(os.path.join(cfg.writer.get_logdir(), 'config.yml'), 'w') as f:
+    #     yaml.dump(cfg, f, default_flow_style=False)
+
     solver = TASKS[cfg.yaml_cfg['task']](cfg)
     
     if args.test_only:
@@ -38,11 +43,13 @@ def main(args, ) -> None:
     
 
 if __name__ == '__main__':
+    import datetime
 
     parser = argparse.ArgumentParser()
     
     # priority 0
     parser.add_argument('-c', '--config', type=str, required=True)
+    parser.add_argument('-n', '--exp_name', type=str, default=datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
     parser.add_argument('-r', '--resume', type=str, help='resume from checkpoint')
     parser.add_argument('-t', '--tuning', type=str, help='tuning from checkpoint')
     parser.add_argument('-d', '--device', type=str, help='device',)
@@ -50,7 +57,7 @@ if __name__ == '__main__':
     parser.add_argument('--use-amp', action='store_true', help='auto mixed precision training')
     parser.add_argument('--output-dir', type=str, help='output directoy')
     parser.add_argument('--summary-dir', type=str, help='tensorboard summry')
-    parser.add_argument('--test-only', action='store_true', default=False,)
+    parser.add_argument('--test-only', action='store_true', default=False)
 
     # priority 1
     parser.add_argument('-u', '--update', nargs='+', help='update yaml config')

@@ -1,0 +1,45 @@
+task: detection
+
+evaluator:
+  type: CocoEvaluator
+  iou_types: ['bbox', ]
+
+num_classes: 5
+remap_mscoco_category: False
+
+
+train_dataloader: 
+  type: DataLoader
+  dataset: 
+    type: CocoDetection
+    img_folder: /mnt/FastSSD/dataset_wp/roboflow/wp_ptz_v2i_coco/train
+    ann_file: /mnt/FastSSD/dataset_wp/roboflow/wp_ptz_v2i_coco/train/_annotations.coco.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  total_batch_size: 16
+  shuffle: True
+  num_workers: 4
+  drop_last: True 
+  collate_fn:
+    type: BatchImageCollateFuncion
+
+
+val_dataloader:
+  type: DataLoader
+  dataset: 
+    type: CocoDetection
+    img_folder: /mnt/FastSSD/dataset_wp/roboflow/wp_ptz_v2i_coco/valid
+    ann_file: /mnt/FastSSD/dataset_wp/roboflow/wp_ptz_v2i_coco/valid/_annotations.coco.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~ 
+  total_batch_size: 16
+  shuffle: False
+  num_workers: 4
+  drop_last: False
+  collate_fn:
+    type: BatchImageCollateFuncion
+

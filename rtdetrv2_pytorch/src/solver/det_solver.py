@@ -5,7 +5,8 @@ import time
 import json
 import datetime
 
-import torch 
+import torch
+import wandb
 
 from ..misc import dist_utils, profiler_utils
 
@@ -16,6 +17,13 @@ from .det_engine import train_one_epoch, evaluate
 class DetSolver(BaseSolver):
     
     def fit(self, ):
+
+        # wandb.init(
+        #     project="rtdetr_ptz",
+        #     name=self.cfg.global_cfg["exp_name"],
+        #     config=self.cfg
+        # )
+
         print("Start training")
         self.train()
         args = self.cfg
@@ -23,7 +31,7 @@ class DetSolver(BaseSolver):
         n_parameters = sum([p.numel() for p in self.model.parameters() if p.requires_grad])
         print(f'number of trainable parameters: {n_parameters}')
 
-        best_stat = {'epoch': -1, }
+        best_stat = {'epoch': -1}
 
         start_time = time.time()
         start_epcoch = self.last_epoch + 1
@@ -56,12 +64,12 @@ class DetSolver(BaseSolver):
             self.last_epoch += 1
 
             if self.output_dir:
-                checkpoint_paths = [self.output_dir / 'last.pth']
+                checkpoint_path = self.output_dir / 'last.pth'
                 # extra checkpoint before LR drop and every 100 epochs
-                if (epoch + 1) % args.checkpoint_freq == 0:
-                    checkpoint_paths.append(self.output_dir / f'checkpoint{epoch:04}.pth')
-                for checkpoint_path in checkpoint_paths:
-                    dist_utils.save_on_master(self.state_dict(), checkpoint_path)
+                # if (epoch + 1) % args.checkpoint_freq == 0:
+                #     checkpoint_paths.append(self.output_dir / f'checkpoint{epoch:04}.pth')
+                # for checkpoint_path in checkpoint_paths:
+                dist_utils.save_on_master(self.state_dict(), checkpoint_path)
 
             module = self.ema.module if self.ema else self.model
             test_stats, coco_evaluator = evaluate(
@@ -97,6 +105,11 @@ class DetSolver(BaseSolver):
                 'epoch': epoch,
                 'n_parameters': n_parameters
             }
+
+            # wandb.log(log_stats)
+            # for key, value in log_stats.items():
+            #     if 'train' in key or 'test' in key:
+            #         self.cfg.writer.add_scalar(key, value, epoch)
 
             if self.output_dir and dist_utils.is_main_process():
                 with (self.output_dir / "log.txt").open("a") as f:

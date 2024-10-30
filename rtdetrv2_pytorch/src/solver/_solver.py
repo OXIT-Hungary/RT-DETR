@@ -51,7 +51,7 @@ class BaseSolver(object):
         self.device = device
         self.last_epoch = self.cfg.last_epoch
         
-        self.output_dir = Path(cfg.output_dir)
+        self.output_dir = Path(cfg.log_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.writer = cfg.writer
 

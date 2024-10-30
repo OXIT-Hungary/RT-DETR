@@ -69,6 +69,8 @@ class BaseConfig(object):
         self.checkpoint_freq :int = 1
         self.output_dir :str = None
         self.summary_dir :str = None
+        self.exp_name: str = None
+        self.log_dir: str = None
         self.device : str = ''
 
     @property
@@ -270,10 +272,9 @@ class BaseConfig(object):
     @property
     def writer(self) -> SummaryWriter:
         if self._writer is None: 
-            if self.summary_dir:
-                self._writer = SummaryWriter(self.summary_dir)
-            elif self.output_dir:
-                self._writer = SummaryWriter(Path(self.output_dir) / 'summary')
+            self._writer = SummaryWriter(log_dir=self.log_dir)
+
+
         return self._writer
     
     @writer.setter
