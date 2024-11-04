@@ -6,7 +6,9 @@ from .core import YAMLConfig
 
 def get_model(args) -> nn.Module:
     """"""
-    cfg = YAMLConfig(args)
+    cfg = YAMLConfig(
+        cfg_path="/home/geri/work/OXIT-Sport_Framework/src/submodules/rt-detr/rtdetrv2/configs/rtdetrv2/rtdetrv2_r18vd_120e_coco.yml"
+    )
 
     if args.checkpoint:
         checkpoint = torch.load(args.checkpoint, map_location="cpu")
