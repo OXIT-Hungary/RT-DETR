@@ -7,7 +7,7 @@ from .core import YAMLConfig
 def get_model(args) -> nn.Module:
     """"""
     cfg = YAMLConfig(
-        cfg_path="/home/geri/work/OXIT-Sport_Framework/src/submodules/rt-detr/rtdetrv2/configs/rtdetrv2/rtdetrv2_r18vd_120e_coco.yml"
+        cfg_path="/home/geri/work/OXIT-Sport_Framework/src/submodules/rt-detr/rtdetrv2/configs/rtdetrv2/rtdetrv2_r50vd_6x_coco.yml"
     )
 
     if args.checkpoint:
